@@ -33,7 +33,7 @@ import sys
 
 
 # ---------------------------------------------------------------------------
-# The shared header (must match exactly what appears in the source files)
+# The shared header layout. The GOV/PPS column label can vary by site.
 # ---------------------------------------------------------------------------
 HEADER = (
     "Time\tDate\tRunhours\t Ains\t DPT\tSPT\tOPT\tMAT\tIOT\tIAT\tLVT\tHVT\t"
@@ -44,6 +44,52 @@ HEADER = (
     "GOV\tAFDPS\tOFDPS\tTTS\tSPARE\tREM_ACK\tREM_RESET\tDouts\t MTR\tMST\tMSP\t"
     "TST\tATST\tAOP\tSVF_CWS_OME\tHORN\tLT1\tCAR\tLT2\tCTR\tTIS\tLT3\tMSH\t"
 )
+
+VARIABLE_HEADER_LABELS = {"GOV", "PPS", "GOV/PPS"}
+
+
+def split_header_columns(line):
+    return [
+        part.strip().lstrip("\ufeff")
+        for part in line.strip().split("\t")
+        if part.strip()
+    ]
+
+
+EXPECTED_HEADER_COLUMNS = split_header_columns(HEADER)
+VARIABLE_HEADER_INDEX = EXPECTED_HEADER_COLUMNS.index("GOV")
+
+
+def get_header_label(line):
+    """
+    Returns GOV, PPS, or GOV/PPS when a line is a known log header.
+    Returns None for data rows or unknown header shapes.
+    """
+    columns = split_header_columns(line)
+    if len(columns) != len(EXPECTED_HEADER_COLUMNS):
+        return None
+
+    for i, column in enumerate(columns):
+        if i == VARIABLE_HEADER_INDEX:
+            if column not in VARIABLE_HEADER_LABELS:
+                return None
+        elif column != EXPECTED_HEADER_COLUMNS[i]:
+            return None
+
+    return columns[VARIABLE_HEADER_INDEX]
+
+
+def select_output_header_label(header_labels):
+    labels = set(header_labels)
+    if "GOV/PPS" in labels or {"GOV", "PPS"}.issubset(labels):
+        return "GOV/PPS"
+    if "PPS" in labels:
+        return "PPS"
+    return "GOV"
+
+
+def make_output_header(header_label):
+    return HEADER.strip().replace("\tGOV\t", f"\t{header_label}\t")
 
 
 def find_sample_files(root_dir):
@@ -62,15 +108,26 @@ def find_sample_files(root_dir):
     return matches
 
 
-def is_header_line(line, header):
+def is_header_line(line):
     """
-    Returns True if the stripped line matches the stripped header.
-    Handles slight whitespace differences between files.
+    Returns True if the line matches a known log header variant.
     """
-    return line.strip() == header.strip()
+    return get_header_label(line) is not None
 
 
-def harvest_data(filepath, header):
+def detect_header_label(filepath):
+    try:
+        with open(filepath, "r", encoding="utf-8", errors="replace") as f:
+            for line in f:
+                label = get_header_label(line)
+                if label:
+                    return label
+    except OSError:
+        return None
+    return None
+
+
+def harvest_data(filepath):
     """
     Reads a file and returns all lines that come AFTER the header line.
     If the header is not found, returns all lines (with a warning).
@@ -84,7 +141,7 @@ def harvest_data(filepath, header):
 
     # Find the header line
     for i, line in enumerate(lines):
-        if is_header_line(line, header):
+        if is_header_line(line):
             data_lines = lines[i + 1:]  # everything after the header
             # Filter out all blank/whitespace-only lines anywhere in the file
             data_lines = [l for l in data_lines if l.strip() != ""]
@@ -120,15 +177,19 @@ def combine_logs(root_dir, output_filename="combined_output.log"):
 
     # Guard: don't accidentally harvest the output file if it already exists
     sample_files = [f for f in sample_files if os.path.abspath(f) != os.path.abspath(output_path)]
+    output_header_label = select_output_header_label(
+        detect_header_label(f) for f in sample_files
+    )
+    print(f"Output header: {output_header_label}")
 
     rows_written = 0
     with open(output_path, "w", encoding="utf-8") as out:
         # Write the header once
-        out.write(HEADER.strip() + "\n\n")
+        out.write(make_output_header(output_header_label) + "\n\n")
 
         for filepath in sample_files:
             print(f"\nHarvesting: {os.path.relpath(filepath, root_dir)}")
-            data_lines = harvest_data(filepath, HEADER)
+            data_lines = harvest_data(filepath)
             print(f"  -> {len(data_lines)} data row(s)")
             for line in data_lines:
                 out.write(line if line.endswith("\n") else line + "\n")

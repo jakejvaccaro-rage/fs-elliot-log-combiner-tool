@@ -67,6 +67,18 @@ If the command window closes too quickly after double clicking, run the script f
 7. Writes the shared header once at the top.
 8. Appends all harvested data rows underneath that one header.
 
+## GOV and PPS Headers
+
+Some sites use `GOV` in the shared header. Other sites use `PPS` in the same column position.
+
+The tool handles this automatically:
+
+- If all matching files use `GOV`, the combined output uses `GOV`.
+- If all matching files use `PPS`, the combined output uses `PPS`.
+- If the matching files include both `GOV` and `PPS`, the combined output uses `GOV/PPS`.
+
+The tool still removes repeated headers from each source file. The only difference is the label written once at the top of the combined output file.
+
 ## What the Tool Does Not Do
 
 - It does not change or delete the original log files.
@@ -312,6 +324,8 @@ data row from file 3
 ```
 
 The header appears only once at the top.
+
+Depending on the source files, the header column after `PMI` may be written as `GOV`, `PPS`, or `GOV/PPS`.
 
 There should not be separate headers between files.
 There should not be separator lines between files.

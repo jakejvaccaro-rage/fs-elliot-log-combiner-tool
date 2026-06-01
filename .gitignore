@@ -62,6 +62,12 @@ local_settings.py
 db.sqlite3
 db.sqlite3-journal
 
+# Keep tiny synthetic log fixtures used by the test runner.
+!tests/cases/**/*.log
+tests/cases/**/combined*.log
+tests/cases/**/actual*.log
+tests/_tmp/
+
 # Flask stuff:
 instance/
 .webassets-cache

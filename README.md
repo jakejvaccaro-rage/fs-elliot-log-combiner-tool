@@ -277,6 +277,24 @@ Example:
 py combine_sample_logs.py "C:\logs\log_automation\Solventum 3M" "Solventum_combined.log"
 ```
 
+## How to Run Tests
+
+The project includes small synthetic test cases under `tests/cases`.
+
+To run all tests:
+
+```powershell
+python tests/run_tests.py
+```
+
+The test runner checks both the command-line version and the GUI version's combine logic. It copies each test case into a temporary `tests/_tmp` folder before running, so the test fixtures stay clean.
+
+To regenerate the synthetic test case files:
+
+```powershell
+python tests/make_test_cases.py
+```
+
 ## Where the Output File Goes
 
 The combined output file is written into the root folder that was scanned.

@@ -10,7 +10,7 @@ Run with:
 
 __author__ = "Jake Vaccaro"
 __email__ = "jacob.vaccaro@rage-energy.com"
-__version__ = "1.0.1"
+__version__ = "1.2"
 
 import os
 import threading

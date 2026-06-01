@@ -52,7 +52,8 @@ If the command window closes too quickly after double clicking, run the script f
 
 - Use `combine_sample_logs_gui.pyw` if you want a window with a folder picker, output filename box, Run button, and progress log.
 - Use `combine_sample_logs.py` if you want to run from a terminal, pass arguments, or double click and paste a folder path.
-- Keep `gui_backend.py` in the same folder as `combine_sample_logs_gui.pyw`. The GUI version needs it.
+- The GUI version is contained in `combine_sample_logs_gui.pyw`.
+- The `.pyw` file extension lets Windows open the GUI without showing a blank terminal window behind it.
 
 ## What the Tool Does
 
@@ -137,15 +138,12 @@ C:\logs\log_automation\Solventum 3M\
 
 The tool does not have to be inside the same folder as the logs, but it is often easier if it is kept nearby.
 
-For the GUI version, keep these files together in the same folder:
+The two runnable tool files are:
 
 - `combine_sample_logs_gui.pyw`
-- `gui_backend.py`
-- `README.md`
-
-For the command-line version, keep this file available:
-
 - `combine_sample_logs.py`
+
+Keep `README.md` nearby for instructions.
 
 ## How to Run the GUI Version
 
@@ -169,7 +167,7 @@ For the command-line version, keep this file available:
 ### Option 2: Run the GUI from a Terminal
 
 1. Open Command Prompt or PowerShell.
-2. Change to the folder where the GUI files are saved.
+2. Change to the folder where `combine_sample_logs_gui.pyw` is saved.
 
    Example:
 
@@ -371,7 +369,7 @@ Install Python 3, or ask IT to install Python 3. If installing Python yourself, 
 What to check:
 
 - Make sure Python is installed.
-- Make sure `combine_sample_logs_gui.pyw` and `gui_backend.py` are in the same folder.
+- Make sure `combine_sample_logs_gui.pyw` is present.
 - Try running the GUI from a terminal so any error message stays visible.
 
 ### Problem: The Command-Line Window Closes After Double Clicking
@@ -432,4 +430,3 @@ Normally file paths cannot contain strings or `&` operators because they are use
 - The output is meant to be one continuous `.log` file.
 - Do not manually add separator lines between harvested sections.
 - Keep the output file name ending in `.log`.
-- Keep `gui_backend.py` with `combine_sample_logs_gui.pyw` if you use the GUI version.

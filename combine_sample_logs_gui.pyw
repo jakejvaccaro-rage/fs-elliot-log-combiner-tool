@@ -275,20 +275,20 @@ class App(tk.Tk):
         # README button
         tk.Label(about_frame, text="Documentation", bg=BG,
                  font=("Segoe UI", 10, "bold")).pack(anchor="w", pady=(0, 6))
-        tk.Button(about_frame, text="📄  Open README.txt", command=self._open_readme,
+        tk.Button(about_frame, text="📄  Open README.md", command=self._open_readme,
                   bg=BTN, fg=FG, relief="flat", padx=12, pady=6,
                   font=("Segoe UI", 10)).pack(anchor="w")
 
     # ---- Callbacks ---------------------------------------------------------
 
     def _open_readme(self):
-        """Open README.txt from the same folder as this script."""
+        """Open README.md from the same folder as this script."""
         script_dir = os.path.dirname(os.path.abspath(__file__))
-        readme_path = os.path.join(script_dir, "README.txt")
+        readme_path = os.path.join(script_dir, "README.md")
         if not os.path.isfile(readme_path):
             messagebox.showwarning("Not Found",
-                f"README.txt was not found in:\n{script_dir}\n\n"
-                "Please make sure README.txt is in the same folder as this script.")
+                f"README.md was not found in:\n{script_dir}\n\n"
+                "Please make sure README.md is in the same folder as this script.")
             return
         # Open with the OS default text viewer (Notepad on Windows, TextEdit on Mac, etc.)
         import subprocess, sys as _sys
